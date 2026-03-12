@@ -601,7 +601,7 @@
             
             if ($('warranty-grid')) {
                 $('warranty-grid').innerHTML = filtered.map(w => {
-                    const price = w.price ? parseFloat(w.price).toLocaleString(lang, {style: 'currency', currency: lang==='pt-PT'?'EUR':'USD'}) : '€ 0,00';
+                    const price = w.price ? parseFloat(w.price).toLocaleString(lang === 'pt-PT' ? 'pt-BR' : lang, {style: 'currency', currency: lang==='pt-PT'?'BRL':'USD'}) : 'R$ 0,00';
                     const eColor = w.status === 'active' ? 'text-green-600 bg-green-50 dark:bg-green-900/20' : 'text-red-600 bg-red-50 dark:bg-red-900/20';
                     const badgeStr = {
                         active: `<span class="bg-green-600/80 backdrop-blur-sm text-white text-[8px] sm:text-[10px] font-bold px-2 py-1 rounded-full absolute top-2 left-2 z-10 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-300 rounded-full animate-pulse"></span>${lang==='pt-PT'?'Ativa':'Active'}</span>`,
@@ -1003,29 +1003,7 @@
 
         // Controle da Interface de Badge de Conexão no Header
         function updateCloudUI(status) {
-            const icon = $('gdrive-status-icon');
-            const text = $('gdrive-status-text');
-            if(!icon || !text) return;
-            const dict = getDict();
-
-            icon.classList.remove('ph-cloud-slash', 'ph-arrows-clockwise', 'animate-spin', 'ph-cloud-check', 'text-gray-400', 'text-blue-500', 'text-green-500', 'text-red-500');
-
-            if (status === 'offline') {
-                icon.classList.add('ph-cloud-slash', 'text-gray-400');
-                text.innerText = dict['gdrive-offline'] || 'Offline';
-            } else if (status === 'loading') {
-                icon.classList.add('ph-arrows-clockwise', 'animate-spin', 'text-blue-500');
-                text.innerText = dict['gdrive-loading'] || 'Conectando...';
-            } else if (status === 'syncing') {
-                icon.classList.add('ph-arrows-clockwise', 'animate-spin', 'text-blue-500');
-                text.innerText = dict['gdrive-syncing'] || 'Sincronizando...';
-            } else if (status === 'online') {
-                icon.classList.add('ph-cloud-check', 'text-green-500');
-                text.innerText = dict['gdrive-online'] || 'Atualizada';
-            } else if (status === 'error') {
-                icon.classList.add('ph-cloud-slash', 'text-red-500');
-                text.innerText = dict['gdrive-error'] || 'Erro';
-            }
+            // Elementos visuais não estão mais no header, mas deixamos a lógica de log
         }
 
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeApp);
