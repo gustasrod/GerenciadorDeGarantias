@@ -245,9 +245,12 @@
     <div id="importExportModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 dark:bg-gray-800">
-                <h2 class="text-lg font-bold flex items-center gap-2 text-gray-800 dark:text-gray-100">
-                    <i class="ph ph-swap text-blue-500"></i> <span data-i18n="backup-title">Sincronização e Backup</span>
-                </h2>
+                <div>
+                    <h2 class="text-lg font-bold flex items-center gap-2 text-gray-800 dark:text-gray-100">
+                        <i class="ph ph-swap text-blue-500"></i> <span data-i18n="backup-title">Sincronização e Backup</span>
+                    </h2>
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1" data-i18n="backup-includes">Inclui: Garantias, Definições e Histórico de Rastreio</p>
+                </div>
                 <button onclick="toggleModal('importExportModal', false)" class="text-gray-400 hover:text-gray-600"><i class="ph ph-x text-xl"></i></button>
             </div>
             
@@ -344,7 +347,7 @@
                 'tracking-history': 'Histórico de Consultas', 'tracking-empty': 'Nenhum histórico guardado.', 'tracking-default-name': 'Encomenda',
                 'tracking-edit-title': 'Renomear Encomenda', 'tracking-edit-label': 'Identificação',
                 'settings-appearance': 'Aparência e Idioma', 'settings-darkmode': 'Modo Escuro', 'settings-darkmode-desc': 'Otimizado para menor fadiga ocular', 'settings-lang': 'Idioma', 'settings-categories': 'Categorias',
-                'cat-new-placeholder': 'Nova categoria...', 'backup-title': 'Sincronização e Backup', 'gdrive-desc': 'Ative para sincronizar seus dados entre celular e computador sem perder nada.',
+                'cat-new-placeholder': 'Nova categoria...', 'backup-title': 'Sincronização e Backup', 'backup-includes': 'Inclui: Garantias, Definições e Histórico de Rastreio', 'gdrive-desc': 'Ative para sincronizar seus dados entre celular e computador sem perder nada.',
                 'label-image': 'Imagem do Produto', 'label-image-click': 'Clique para adicionar imagem',
                 'label-name': 'Nome do Produto *', 'label-category': 'Categoria', 'label-brand': 'Marca', 'label-model': 'Modelo', 'label-date': 'Data da Compra *', 'label-years': 'Prazo (anos) *',
                 'label-store': 'Loja', 'label-price': 'Preço (R$)', 'label-link': 'Link da Nota Fiscal', 'label-notes': 'Observações',
@@ -363,7 +366,7 @@
                 'tracking-history': 'Search History', 'tracking-empty': 'No saved history.', 'tracking-default-name': 'Package',
                 'tracking-edit-title': 'Rename Package', 'tracking-edit-label': 'Identification',
                 'settings-appearance': 'Appearance & Language', 'settings-darkmode': 'Dark Mode', 'settings-darkmode-desc': 'Optimized for eye comfort', 'settings-lang': 'Language', 'settings-categories': 'Categories',
-                'cat-new-placeholder': 'New category...', 'backup-title': 'Sync & Backup', 'gdrive-desc': 'Enable cloud sync to keep devices updated seamlessly.',
+                'cat-new-placeholder': 'New category...', 'backup-title': 'Sync & Backup', 'backup-includes': 'Includes: Warranties, Settings and Tracking History', 'gdrive-desc': 'Enable cloud sync to keep devices updated seamlessly.',
                 'label-image': 'Product Image', 'label-image-click': 'Click to add image',
                 'label-name': 'Product Name *', 'label-category': 'Category', 'label-brand': 'Brand', 'label-model': 'Model', 'label-date': 'Purchase Date *', 'label-years': 'Period (years) *',
                 'label-store': 'Store', 'label-price': 'Price', 'label-link': 'Receipt Link', 'label-notes': 'Notes',
