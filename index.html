@@ -774,7 +774,8 @@
         // ==========================================
         const GDrive = {
             CLIENT_ID: '1005190363190-f5rfr5d2eqaruud5b3qolv66dnmvvg3m.apps.googleusercontent.com',
-            token: null,
+            token: localStorage.getItem('gdrive_token') || null,
+            tokenExpiry: parseInt(localStorage.getItem('gdrive_token_expiry')) || 0,
             fileId: localStorage.getItem('gdrive_file_id') || null,
             isConnected: localStorage.getItem('gdrive_connected') === 'true',
             client: null,
@@ -791,42 +792,52 @@
                 callback: async (response) => {
                     if (response && response.access_token) {
                         GDrive.token = response.access_token;
-                        GDrive.isConnected = true;
+                        // O Google normalmente dá um token válido por 3600 segundos (1 hora)
+                        GDrive.tokenExpiry = Date.now() + ((response.expires_in || 3600) * 1000);
+                        
+                        localStorage.setItem('gdrive_token', GDrive.token);
+                        localStorage.setItem('gdrive_token_expiry', GDrive.tokenExpiry);
                         localStorage.setItem('gdrive_connected', 'true');
+                        GDrive.isConnected = true;
+                        
                         renderDriveUI();
                         updateCloudUI('syncing');
                         await downloadFromDrive();
                     }
                 },
-                // NOVO: Tratamento de erros inteligente
+                // Tratamento de Erros Client-Side Avançado
                 error_callback: (error) => {
-                    // Evita exibir alertas no F5 caso a sincronização silenciosa falhe
-                    // ou se o utilizador fechar a janela de login propositadamente.
-                    if (error.type !== 'popup_closed' && error.type !== 'interaction_required') {
+                    if (error.type === 'interaction_required') {
+                        // O browser bloqueou o token silencioso, mas o utilizador continua ligado ao projeto
+                        // Limpamos apenas o token atual para forçar um novo clique, sem desconectar
+                        GDrive.token = null;
+                        updateCloudUI('offline');
+                        renderDriveUI();
+                    } else if (error.type !== 'popup_closed') {
                         alert('Erro na ligação com a Google: ' + (error.type || JSON.stringify(error)) + '\n\nCertifique-se de que o URL deste site está nas "Origens JavaScript autorizadas".');
+                        disconnectGoogleDrive();
                     }
-                    
-                    // Reverte o estado interno e a interface do utilizador para Desconectado
-                    GDrive.isConnected = false;
-                    GDrive.token = null;
-                    localStorage.setItem('gdrive_connected', 'false');
-                    renderDriveUI();
-                    updateCloudUI('offline');
                 }
             });
 
-            // Tenta logar de forma silenciosa e manter a sessão contínua sem pedir cliques
+            // Lógica de Boot com Persistência de Token (sobrevive ao F5 perfeitamente)
             if (GDrive.isConnected) {
                 renderDriveUI();
-                updateCloudUI('loading');
-                try {
-                     GDrive.client.requestAccessToken({ prompt: 'none' });
-                } catch(e) {
-                     // Fallback imediato caso a chamada falhe a nível de execução
-                     GDrive.isConnected = false;
-                     localStorage.setItem('gdrive_connected', 'false');
-                     renderDriveUI();
-                     updateCloudUI('offline');
+                const now = Date.now();
+                
+                if (GDrive.token && GDrive.tokenExpiry > now) {
+                    // O Token ainda é válido! Não precisamos perguntar ao Google de novo.
+                    updateCloudUI('syncing');
+                    downloadFromDrive();
+                } else {
+                    // O Token expirou ou não existe. Tentamos a via silenciosa primeiro.
+                    updateCloudUI('loading');
+                    try {
+                         GDrive.client.requestAccessToken({ prompt: 'none' });
+                    } catch(e) {
+                         GDrive.token = null;
+                         updateCloudUI('offline');
+                    }
                 }
             } else {
                 renderDriveUI();
@@ -847,21 +858,15 @@
         }
 
         function connectGoogleDrive() {
-            // Verificação 1: Bloqueadores de anúncios ou falha de rede a bloquear a API
             if (typeof google === 'undefined') {
                 alert('ERRO: O script do Google não carregou. Verifique se o seu navegador está bloqueando scripts de terceiros (como Brave Shields, Modo Anônimo ou AdBlock).');
                 return;
             }
+            if (!GDrive.client) initGoogleDrive(); 
             
-            // Verificação 2: Forçar inicialização caso tenha falhado durante o boot da página
-            if (!GDrive.client) {
-                initGoogleDrive(); 
-            }
-            
-            // Disparo oficial do Pop-up da Google
             if (GDrive.client) {
                 try {
-                    // Removido o prompt de consentimento obrigatório para evitar conflitos de pop-up
+                    // Removido o prompt forçado, para que seja o mais rápido e invisível possível
                     GDrive.client.requestAccessToken();
                 } catch (error) {
                     alert('Erro ao tentar abrir a janela da Google: ' + error.message);
@@ -874,27 +879,40 @@
         function disconnectGoogleDrive() {
              GDrive.isConnected = false;
              GDrive.token = null;
+             GDrive.tokenExpiry = 0;
              GDrive.fileId = null;
+             
              localStorage.setItem('gdrive_connected', 'false');
              localStorage.removeItem('gdrive_file_id');
+             localStorage.removeItem('gdrive_token');
+             localStorage.removeItem('gdrive_token_expiry');
+             
              renderDriveUI();
              updateCloudUI('offline');
         }
 
         // Ações Manuais (Botões do Modal)
         async function syncFromDriveManual() {
-            if (!GDrive.token) { connectGoogleDrive(); return; }
+            const now = Date.now();
+            if (!GDrive.token || GDrive.tokenExpiry <= now) { 
+                connectGoogleDrive(); // Se expirou, abre o pop-up instantâneo para renovar
+                return; 
+            }
             await downloadFromDrive();
             toggleModal('importExportModal', false);
         }
 
         async function syncToDriveManual() {
-            if (!GDrive.token) { connectGoogleDrive(); return; }
+            const now = Date.now();
+            if (!GDrive.token || GDrive.tokenExpiry <= now) { 
+                connectGoogleDrive(); 
+                return; 
+            }
             await uploadToDrive();
             toggleModal('importExportModal', false);
         }
 
-        // Motor de Download (Puxa os dados para o dispositivo atual)
+        // Motor de Download
         async function downloadFromDrive() {
             try {
                 if (!GDrive.fileId) {
@@ -926,7 +944,6 @@
                     initializeApp();
                     updateCloudUI('online');
                 } else {
-                    // Arquivo virgem, faz push dos dados locais pro GDrive
                     await uploadToDrive();
                 }
             } catch (error) {
@@ -935,15 +952,18 @@
             }
         }
 
-        // Motor de Upload em 2 Etapas (REST Nativo, evita falhas de multipart)
+        // Motor de Upload em 2 Etapas
         async function uploadToDrive() {
-            if (!GDrive.token) return;
+            const now = Date.now();
+            if (!GDrive.token || GDrive.tokenExpiry <= now) {
+                updateCloudUI('offline');
+                return; // Requer intervenção manual se estiver a tentar guardar em background com token expirado
+            }
+            
             updateCloudUI('syncing');
-
             const fileContent = JSON.stringify({ version: "2.1", warranties, settings: appSettings, tracking: trackingHistory });
 
             try {
-                // Etapa 1: Obter ID ou Criar Metadados
                 let id = GDrive.fileId;
                 if (!id) {
                     const resFind = await fetch("https://www.googleapis.com/drive/v3/files?q=name='garantia_plus_sync.json' and trashed=false&fields=files(id)", {
@@ -965,7 +985,6 @@
                     localStorage.setItem('gdrive_file_id', id);
                 }
 
-                // Etapa 2: Fazer Upload (Substituição) do arquivo
                 await fetch(`https://www.googleapis.com/upload/drive/v3/files/${id}?uploadType=media`, {
                     method: 'PATCH',
                     headers: { 'Authorization': 'Bearer ' + GDrive.token, 'Content-Type': 'application/json' },
@@ -980,7 +999,7 @@
             }
         }
 
-        // Sincronização Inteligente por Debounce (Escreve na nuvem X segs após mudanças locais)
+        // Sincronização Inteligente por Debounce
         function triggerCloudSync() {
             if (!GDrive.isConnected || !GDrive.token) return;
             clearTimeout(GDrive.syncTimeout);
@@ -990,20 +1009,20 @@
             }, 3000); 
         }
 
-        // AUTO-SYNC DE DISPOSITIVOS: Detecta quando o navegador/aba ganha foco (Ex: Abrir o app no celular)
+        // AUTO-SYNC DE DISPOSITIVOS
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible' && GDrive.isConnected && GDrive.token) {
-                // Evita loops infinitos se a aba perder foco rápido demais (limite de 10seg)
-                if (Date.now() - GDrive.lastSyncStamp > 10000) {
+                const now = Date.now();
+                if (GDrive.tokenExpiry > now && now - GDrive.lastSyncStamp > 10000) {
                     updateCloudUI('syncing');
                     downloadFromDrive();
                 }
             }
         });
 
-        // Controle da Interface de Badge de Conexão no Header
+        // Interface passiva apenas de logging (agora que o botão não existe)
         function updateCloudUI(status) {
-            // Elementos visuais não estão mais no header, mas deixamos a lógica de log
+            if (status === 'error') console.warn('A sincronização do Google Drive falhou.');
         }
 
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeApp);
