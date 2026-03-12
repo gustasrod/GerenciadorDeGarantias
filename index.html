@@ -390,6 +390,7 @@
         function initializeApp() {
             applySettings();
             updateUIText();
+            renderDriveUI(); // Garante que a interface reflete imediatamente o estado salvo no F5
         }
 
         function updateUIText() {
@@ -783,6 +784,8 @@
             lastSyncStamp: 0
         };
 
+        let pendingAction = null; // Rastreia a intenção do utilizador após a renovação do token
+
         function initGoogleDrive() {
             if (typeof google === 'undefined') return; 
             
@@ -793,7 +796,7 @@
                     if (response && response.access_token) {
                         GDrive.token = response.access_token;
                         // O Google normalmente dá um token válido por 3600 segundos (1 hora)
-                        GDrive.tokenExpiry = Date.now() + ((response.expires_in || 3600) * 1000);
+                        GDrive.tokenExpiry = Date.now() + ((parseInt(response.expires_in) || 3600) * 1000);
                         
                         localStorage.setItem('gdrive_token', GDrive.token);
                         localStorage.setItem('gdrive_token_expiry', GDrive.tokenExpiry);
@@ -801,22 +804,30 @@
                         GDrive.isConnected = true;
                         
                         renderDriveUI();
-                        updateCloudUI('syncing');
-                        await downloadFromDrive();
+                        
+                        // Retoma a ação que o utilizador queria fazer antes do token expirar
+                        if (pendingAction === 'upload') {
+                            pendingAction = null;
+                            await uploadToDrive();
+                            toggleModal('importExportModal', false);
+                        } else if (pendingAction === 'download') {
+                            pendingAction = null;
+                            updateCloudUI('syncing');
+                            await downloadFromDrive();
+                            toggleModal('importExportModal', false);
+                        } else {
+                            // Boot automático (Puxa os dados silenciosamente)
+                            updateCloudUI('syncing');
+                            await downloadFromDrive();
+                        }
                     }
                 },
-                // Tratamento de Erros Client-Side Avançado
+                // Tratamento de Erros Seguro (Não apaga a sessão por falsos positivos de segurança do browser)
                 error_callback: (error) => {
-                    if (error.type === 'interaction_required') {
-                        // O browser bloqueou o token silencioso, mas o utilizador continua ligado ao projeto
-                        // Limpamos apenas o token atual para forçar um novo clique, sem desconectar
-                        GDrive.token = null;
-                        updateCloudUI('offline');
-                        renderDriveUI();
-                    } else if (error.type !== 'popup_closed') {
-                        alert('Erro na ligação com a Google: ' + (error.type || JSON.stringify(error)) + '\n\nCertifique-se de que o URL deste site está nas "Origens JavaScript autorizadas".');
-                        disconnectGoogleDrive();
-                    }
+                    console.warn("Erro silencioso da Google:", error);
+                    updateCloudUI('offline');
+                    // Removemos a desconexão automática. Se a renovação silenciosa falhar,
+                    // a interface mantém os botões "Exportar/Importar" ativos. O utilizador clica e renova manualmente.
                 }
             });
 
@@ -826,18 +837,14 @@
                 const now = Date.now();
                 
                 if (GDrive.token && GDrive.tokenExpiry > now) {
-                    // O Token ainda é válido! Não precisamos perguntar ao Google de novo.
+                    // O Token ainda é válido! Não precisamos de abrir pop-ups nem chamar a Google novamente.
                     updateCloudUI('syncing');
                     downloadFromDrive();
                 } else {
-                    // O Token expirou ou não existe. Tentamos a via silenciosa primeiro.
-                    updateCloudUI('loading');
-                    try {
-                         GDrive.client.requestAccessToken({ prompt: 'none' });
-                    } catch(e) {
-                         GDrive.token = null;
-                         updateCloudUI('offline');
-                    }
+                    // O Token expirou. A interface continua conectada (mostra os botões), mas o token interno é limpo
+                    // para obrigar um clique de autorização rápido na próxima vez que o utilizador quiser sincronizar.
+                    GDrive.token = null;
+                    updateCloudUI('offline');
                 }
             } else {
                 renderDriveUI();
@@ -866,7 +873,6 @@
             
             if (GDrive.client) {
                 try {
-                    // Removido o prompt forçado, para que seja o mais rápido e invisível possível
                     GDrive.client.requestAccessToken();
                 } catch (error) {
                     alert('Erro ao tentar abrir a janela da Google: ' + error.message);
@@ -881,6 +887,7 @@
              GDrive.token = null;
              GDrive.tokenExpiry = 0;
              GDrive.fileId = null;
+             pendingAction = null;
              
              localStorage.setItem('gdrive_connected', 'false');
              localStorage.removeItem('gdrive_file_id');
@@ -895,6 +902,7 @@
         async function syncFromDriveManual() {
             const now = Date.now();
             if (!GDrive.token || GDrive.tokenExpiry <= now) { 
+                pendingAction = 'download';
                 connectGoogleDrive(); // Se expirou, abre o pop-up instantâneo para renovar
                 return; 
             }
@@ -905,7 +913,8 @@
         async function syncToDriveManual() {
             const now = Date.now();
             if (!GDrive.token || GDrive.tokenExpiry <= now) { 
-                connectGoogleDrive(); 
+                pendingAction = 'upload';
+                connectGoogleDrive(); // Se expirou, abre o pop-up instantâneo para renovar
                 return; 
             }
             await uploadToDrive();
