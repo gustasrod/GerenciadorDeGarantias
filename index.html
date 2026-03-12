@@ -9,6 +9,8 @@
     <!-- Tecnologias estritamente Client-Side via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Importação do SDK de Autenticação Oficial da Google (Identity Services) -->
+    <script src="https://accounts.google.com/gsi/client" onload="initGoogleDrive()" async defer></script>
     
     <!-- Configuração do Tailwind para Dark Mode nativo via classe CSS -->
     <script>
@@ -72,6 +74,12 @@
             
             <!-- Ações de Backup e Nova Garantia -->
             <div class="flex items-center gap-2 sm:gap-3" id="header-actions">
+                <!-- Indicador de Status da Nuvem (Google Drive) -->
+                <button onclick="toggleModal('importExportModal', true)" class="flex items-center gap-1.5 px-3 py-2 text-[10px] sm:text-xs font-medium bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Status da Nuvem">
+                    <i id="gdrive-status-icon" class="ph ph-cloud-slash text-gray-400 text-sm sm:text-base"></i>
+                    <span id="gdrive-status-text" class="hidden sm:inline text-gray-600 dark:text-gray-300">Offline</span>
+                </button>
+                
                 <button onclick="toggleModal('importExportModal', true)" class="flex items-center gap-2 px-3 sm:px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors dark:bg-gray-800 dark:border-gray-600">
                     <i class="ph ph-download-simple"></i>
                     <span class="hidden md:inline" data-i18n="btn-backup">Importar/Exportar</span>
@@ -252,7 +260,28 @@
                 <button onclick="toggleModal('importExportModal', false)" class="text-gray-400 hover:text-gray-600"><i class="ph ph-x text-xl"></i></button>
             </div>
             <div class="p-6">
-                <p class="text-sm text-gray-600 mb-6" data-i18n="backup-desc">Backup consolidado offline.</p>
+                <!-- Painel do Google Drive (Nuvem) -->
+                <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800 mb-6">
+                    <div class="flex items-start gap-3">
+                        <div class="p-2 bg-blue-100 dark:bg-blue-800 rounded-lg shrink-0">
+                            <i class="ph ph-google-logo text-blue-600 dark:text-blue-300 text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-blue-900 dark:text-blue-100 text-sm mb-1" data-i18n="gdrive-title">Sincronização na Nuvem</h3>
+                            <p class="text-xs text-blue-700 dark:text-blue-300 mb-3" data-i18n="gdrive-desc">Sincronize automaticamente os seus dispositivos com o Google Drive.</p>
+                            <div class="flex gap-2">
+                                <button onclick="connectGoogleDrive()" class="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors flex justify-center items-center gap-2">
+                                    <i class="ph ph-arrows-clockwise"></i> <span data-i18n="btn-gdrive-connect">Conectar Drive</span>
+                                </button>
+                                <button onclick="disconnectGoogleDrive()" class="px-3 py-2 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 text-xs font-bold rounded-lg transition-colors" title="Desconectar">
+                                    <i class="ph ph-plug-x text-base"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-sm text-gray-600 mb-4" data-i18n="backup-desc">Backup consolidado offline.</p>
                 <div class="space-y-4">
                     <button onclick="exportData()" class="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800"><i class="ph ph-export"></i> <span data-i18n="btn-export">Exportar</span></button>
                     <div class="relative flex justify-center text-sm my-2"><div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div><span class="px-2 bg-white text-gray-500 relative">ou</span></div>
@@ -319,7 +348,8 @@
                 'label-name': 'Nome do Produto *', 'label-category': 'Categoria', 'label-brand': 'Marca', 'label-model': 'Modelo', 'label-date': 'Data da Compra *', 'label-years': 'Prazo (anos) *',
                 'label-store': 'Loja', 'label-price': 'Preço (R$)', 'label-link': 'Link da Nota Fiscal', 'label-notes': 'Observações',
                 'stat-total': 'Total', 'stat-active': 'Ativas', 'stat-critical': 'No Prazo', 'stat-expired': 'Expiradas',
-                'modal-title-new': 'Nova Garantia', 'modal-title-edit': 'Editar Garantia', 'msg-confirm-delete': 'Tem a certeza que deseja eliminar?', 'msg-import-error': 'Erro na integridade do ficheiro.', 'msg-import-success': 'Restaurado com sucesso!'
+                'modal-title-new': 'Nova Garantia', 'modal-title-edit': 'Editar Garantia', 'msg-confirm-delete': 'Tem a certeza que deseja eliminar?', 'msg-import-error': 'Erro na integridade do ficheiro.', 'msg-import-success': 'Restaurado com sucesso!',
+                'gdrive-title': 'Sincronização na Nuvem', 'gdrive-desc': 'Sincronize automaticamente os seus dispositivos com o Google Drive.', 'btn-gdrive-connect': 'Conectar Drive', 'gdrive-offline': 'Offline', 'gdrive-loading': 'Conectando...', 'gdrive-syncing': 'Sincronizando...', 'gdrive-online': 'Nuvem Atualizada', 'gdrive-error': 'Erro na Nuvem', 'gdrive-disconnected': 'Desconectado do Google Drive.'
             },
             'en-US': {
                 'app-name': 'Warranty+', 'app-subtitle': 'Warranty Manager', 'nav-tracking': 'Tracking', 'nav-settings': 'Settings',
@@ -335,7 +365,8 @@
                 'label-name': 'Product Name *', 'label-category': 'Category', 'label-brand': 'Brand', 'label-model': 'Model', 'label-date': 'Purchase Date *', 'label-years': 'Period (years) *',
                 'label-store': 'Store', 'label-price': 'Price', 'label-link': 'Receipt Link', 'label-notes': 'Notes',
                 'stat-total': 'Total', 'stat-active': 'Active', 'stat-critical': 'Critical', 'stat-expired': 'Expired',
-                'modal-title-new': 'New Warranty', 'modal-title-edit': 'Edit Warranty', 'msg-confirm-delete': 'Are you sure you want to delete this?', 'msg-import-error': 'File integrity error.', 'msg-import-success': 'Restored successfully!'
+                'modal-title-new': 'New Warranty', 'modal-title-edit': 'Edit Warranty', 'msg-confirm-delete': 'Are you sure you want to delete this?', 'msg-import-error': 'File integrity error.', 'msg-import-success': 'Restored successfully!',
+                'gdrive-title': 'Cloud Sync', 'gdrive-desc': 'Automatically sync your devices with Google Drive.', 'btn-gdrive-connect': 'Connect Drive', 'gdrive-offline': 'Offline', 'gdrive-loading': 'Connecting...', 'gdrive-syncing': 'Syncing...', 'gdrive-online': 'Cloud Synced', 'gdrive-error': 'Cloud Error', 'gdrive-disconnected': 'Disconnected from Google Drive.'
             }
         };
 
@@ -391,6 +422,7 @@
             const prevFilter = $('categoryFilter')?.value || 'all';
             updateUIText(); 
             if ($('categoryFilter')) { $('categoryFilter').value = prevFilter; renderWarranties(); }
+            triggerCloudSync(); // Envia as configurações novas para o Drive
         }
 
         const toggleDarkMode = () => updateSetting('darkMode', !appSettings.darkMode);
@@ -460,6 +492,7 @@
             
             localStorage.setItem(TRACKING_KEY, JSON.stringify(trackingHistory));
             renderTrackingHistory();
+            triggerCloudSync(); // Sincroniza histórico na nuvem
 
             // Injeção da URL externa
             if($('msgAguardando')) $('msgAguardando').style.display = 'none';
@@ -475,6 +508,7 @@
             trackingHistory = trackingHistory.filter(t => t.code !== code);
             localStorage.setItem(TRACKING_KEY, JSON.stringify(trackingHistory));
             renderTrackingHistory();
+            triggerCloudSync();
         }
 
         function openEditTrackingModal(code) {
@@ -494,6 +528,7 @@
                 item.name = newName;
                 localStorage.setItem(TRACKING_KEY, JSON.stringify(trackingHistory));
                 renderTrackingHistory();
+                triggerCloudSync();
             }
             toggleModal('editTrackingModal', false);
         }
@@ -664,6 +699,7 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(warranties));
             renderWarranties();
             toggleModal('formModal', false);
+            triggerCloudSync(); // Envia os dados da nova/editada garantia para o Google Drive
         }
 
         function editWarranty(id) {
@@ -736,6 +772,7 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(warranties));
             renderWarranties();
             toggleModal('formModal', false);
+            triggerCloudSync(); // Dispara atualização e apaga garantia na nuvem
         }
 
         /* * 8. SINCRONIZAÇÃO DE DADOS OFFLINE (Blob API)
@@ -765,9 +802,192 @@
                     initializeApp();
                     toggleModal('importExportModal', false);
                     alert(getDict()['msg-import-success']);
+                    triggerCloudSync(); // Alinha a nuvem aos dados recém importados manualmente
                 } catch { alert(getDict()['msg-import-error']); }
             };
             reader.readAsText(file); event.target.value = '';
+        }
+
+        /* * ==========================================
+         * 9. LÓGICA DO GOOGLE DRIVE (BAAS CLIENT-SIDE)
+         * O JavaScript puro comunica com a API REST usando as chaves providenciadas.
+         * ========================================== */
+        const GDrive = {
+            CLIENT_ID: '1005190363190-f5rfr5d2eqaruud5b3qolv66dnmvvg3m.apps.googleusercontent.com',
+            token: null,
+            fileId: localStorage.getItem('gdrive_file_id') || null,
+            isConnected: localStorage.getItem('gdrive_connected') === 'true',
+            client: null,
+            syncTimeout: null
+        };
+
+        function initGoogleDrive() {
+            if (typeof google === 'undefined') return; // Bypass seguro caso o GSI falhe ao carregar offline
+            
+            // Inicialização da instância OAuth2 do lado do cliente
+            GDrive.client = google.accounts.oauth2.initTokenClient({
+                client_id: GDrive.CLIENT_ID,
+                scope: 'https://www.googleapis.com/auth/drive.file',
+                callback: async (response) => {
+                    if (response && response.access_token) {
+                        GDrive.token = response.access_token;
+                        GDrive.isConnected = true;
+                        localStorage.setItem('gdrive_connected', 'true');
+                        updateCloudUI('syncing');
+                        await syncWithDriveOnConnect(); // Puxa dados imediatamente na autenticação
+                    }
+                }
+            });
+
+            // Lógica requisitada: "Ao dar F5 deve importar automaticamente"
+            if (GDrive.isConnected) {
+                updateCloudUI('loading');
+                try {
+                     // Tenta capturar o token em silêncio (Background Iframe) se houver sessão Google ativa.
+                     // Se tiver permissão ativa no browser, ele cai no callback acima e puxa os dados!
+                     GDrive.client.requestAccessToken({ prompt: 'none' });
+                } catch(e) {
+                     updateCloudUI('offline');
+                }
+            } else {
+                updateCloudUI('offline');
+            }
+        }
+
+        function connectGoogleDrive() {
+            if (GDrive.client) {
+                // Solicitação manual de permissão através da Interface do Usuário (Pop-up Google)
+                GDrive.client.requestAccessToken({ prompt: 'consent' });
+            }
+        }
+
+        function disconnectGoogleDrive() {
+             GDrive.isConnected = false;
+             GDrive.token = null;
+             GDrive.fileId = null;
+             localStorage.setItem('gdrive_connected', 'false');
+             localStorage.removeItem('gdrive_file_id');
+             updateCloudUI('offline');
+             alert(getDict()['gdrive-disconnected']);
+        }
+
+        // Motor central de Sincronização e Inteligência (Cria arquivo ou Puxa do Gdrive)
+        async function syncWithDriveOnConnect() {
+            try {
+                // Etapa 1: Obter a identificação exata do arquivo na nuvem caso não saibamos (Celular Novo logando)
+                if (!GDrive.fileId) {
+                    const resFind = await fetch("https://www.googleapis.com/drive/v3/files?q=name='garantia_plus_sync.json' and trashed=false&fields=files(id)", {
+                        headers: { 'Authorization': 'Bearer ' + GDrive.token }
+                    });
+                    const jsonFind = await resFind.json();
+                    if (jsonFind.files && jsonFind.files.length > 0) {
+                        GDrive.fileId = jsonFind.files[0].id;
+                        localStorage.setItem('gdrive_file_id', GDrive.fileId);
+                    }
+                }
+
+                // Etapa 2: Recuperação de Dados. "Puxar as coisas da nuvem e injetar na memória"
+                if (GDrive.fileId) {
+                    const resDownload = await fetch(`https://www.googleapis.com/drive/v3/files/${GDrive.fileId}?alt=media`, {
+                        headers: { 'Authorization': 'Bearer ' + GDrive.token }
+                    });
+                    const data = await resDownload.json();
+                    
+                    if (data.warranties) warranties = data.warranties;
+                    if (data.settings) appSettings = data.settings;
+                    if (data.tracking) trackingHistory = data.tracking;
+
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(warranties));
+                    localStorage.setItem(SETTINGS_KEY, JSON.stringify(appSettings));
+                    localStorage.setItem(TRACKING_KEY, JSON.stringify(trackingHistory));
+
+                    initializeApp(); // Reconstrói visualmente todos os Cards
+                    toggleModal('importExportModal', false);
+                    updateCloudUI('online');
+                } else {
+                    // Etapa 3: Nada existe no Google Drive deste e-mail. Vamos empurrar o state atual pra ele.
+                    await uploadToDrive(true);
+                }
+            } catch (error) {
+                console.error("Erro no GDrive:", error);
+                updateCloudUI('error');
+            }
+        }
+
+        // Trabalhador pesado do GDrive REST API (Criação de Multipart Form via JS sem Backend)
+        async function uploadToDrive(isCreation = false) {
+            if (!GDrive.token) return;
+            updateCloudUI('syncing');
+
+            const data = { version: "2.1", warranties, settings: appSettings, tracking: trackingHistory };
+            const fileContent = JSON.stringify(data);
+            const metadata = { name: 'garantia_plus_sync.json', mimeType: 'application/json' };
+
+            const form = new FormData();
+            form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+            form.append('file', new Blob([fileContent], { type: 'application/json' }));
+
+            let url = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
+            let method = 'POST'; // Cria o arquivo virgem no drive
+
+            if (!isCreation && GDrive.fileId) {
+                url = `https://www.googleapis.com/upload/drive/v3/files/${GDrive.fileId}?uploadType=multipart`;
+                method = 'PATCH'; // Atualiza os blocos e substitui o arquivo velho
+            }
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Authorization': 'Bearer ' + GDrive.token },
+                    body: form
+                });
+                const result = await res.json();
+                if (result.id) {
+                    GDrive.fileId = result.id;
+                    localStorage.setItem('gdrive_file_id', result.id);
+                }
+                updateCloudUI('online');
+            } catch(e) {
+                updateCloudUI('error');
+            }
+        }
+
+        // Delay Inteligente (Debounce)
+        // Evita chamadas abusivas na API enquanto o usuário salva vários itens rápidos. Evita ban.
+        function triggerCloudSync() {
+            if (!GDrive.isConnected || !GDrive.token) return;
+            clearTimeout(GDrive.syncTimeout);
+            updateCloudUI('syncing');
+            GDrive.syncTimeout = setTimeout(() => {
+                uploadToDrive();
+            }, 3000); // 3 segundos de respiro para o envio consolidado
+        }
+
+        function updateCloudUI(status) {
+            const icon = $('gdrive-status-icon');
+            const text = $('gdrive-status-text');
+            if(!icon || !text) return;
+            const dict = getDict();
+
+            // Zera as classes dinâmicas
+            icon.classList.remove('ph-cloud-slash', 'ph-arrows-clockwise', 'animate-spin', 'ph-cloud-check', 'text-gray-400', 'text-blue-500', 'text-green-500', 'text-red-500');
+
+            if (status === 'offline') {
+                icon.classList.add('ph-cloud-slash', 'text-gray-400');
+                text.innerText = dict['gdrive-offline'] || 'Offline';
+            } else if (status === 'loading') {
+                icon.classList.add('ph-arrows-clockwise', 'animate-spin', 'text-blue-500');
+                text.innerText = dict['gdrive-loading'] || 'Conectando...';
+            } else if (status === 'syncing') {
+                icon.classList.add('ph-arrows-clockwise', 'animate-spin', 'text-blue-500');
+                text.innerText = dict['gdrive-syncing'] || 'Sincronizando...';
+            } else if (status === 'online') {
+                icon.classList.add('ph-cloud-check', 'text-green-500');
+                text.innerText = dict['gdrive-online'] || 'Atualizada';
+            } else if (status === 'error') {
+                icon.classList.add('ph-cloud-slash', 'text-red-500');
+                text.innerText = dict['gdrive-error'] || 'Erro';
+            }
         }
 
         /* Boot Seguro */
