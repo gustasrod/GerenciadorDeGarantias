@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- O atributo lang é manipulado dinamicamente pelo motor i18n via JS -->
 <html lang="pt-PT" id="app-html">
 <head>
     <meta charset="UTF-8">
@@ -9,7 +8,8 @@
     <!-- Tecnologias estritamente Client-Side via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- Importação do SDK de Autenticação Oficial da Google (Identity Services) -->
+    
+    <!-- Importação do SDK de Autenticação Oficial da Google -->
     <script src="https://accounts.google.com/gsi/client" onload="initGoogleDrive()" async defer></script>
     
     <!-- Configuração do Tailwind para Dark Mode nativo via classe CSS -->
@@ -26,7 +26,6 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Paleta de Cores e Adaptação Automática (Light/Dark) */
         body { background-color: #F9FAFB; color: #1F2937; }
         .dark body { background-color: #111827; color: #F9FAFB; }
         .dark .bg-white { background-color: #1F2937; border-color: #374151; }
@@ -74,15 +73,15 @@
             
             <!-- Ações de Backup e Nova Garantia -->
             <div class="flex items-center gap-2 sm:gap-3" id="header-actions">
-                <!-- Indicador de Status da Nuvem (Google Drive) -->
+                <!-- Indicador visual de Sincronização em tempo real -->
                 <button onclick="toggleModal('importExportModal', true)" class="flex items-center gap-1.5 px-3 py-2 text-[10px] sm:text-xs font-medium bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Status da Nuvem">
                     <i id="gdrive-status-icon" class="ph ph-cloud-slash text-gray-400 text-sm sm:text-base"></i>
                     <span id="gdrive-status-text" class="hidden sm:inline text-gray-600 dark:text-gray-300">Offline</span>
                 </button>
                 
                 <button onclick="toggleModal('importExportModal', true)" class="flex items-center gap-2 px-3 sm:px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors dark:bg-gray-800 dark:border-gray-600">
-                    <i class="ph ph-download-simple"></i>
-                    <span class="hidden md:inline" data-i18n="btn-backup">Importar/Exportar</span>
+                    <i class="ph ph-swap"></i>
+                    <span class="hidden md:inline" data-i18n="btn-backup">Sincronizar Dados</span>
                 </button>
                 <button onclick="openFormModal()" class="flex items-center gap-2 px-3 sm:px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors dark:bg-blue-600 dark:hover:bg-blue-700">
                     <i class="ph ph-plus"></i>
@@ -101,7 +100,6 @@
         <div id="view-garantias">
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6" id="stats-container"></div>
 
-            <!-- Filtros e Busca em Tempo Real -->
             <div class="flex flex-col sm:flex-row gap-3 mb-4 sm:mb-6">
                 <div class="relative flex-1">
                     <i class="ph ph-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
@@ -121,7 +119,7 @@
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-4" id="warranty-grid"></div>
         </div>
 
-        <!-- VISTA 2: RASTREIO (IFRAME API) -->
+        <!-- VISTA 2: RASTREIO -->
         <div id="view-rastreio" class="hidden flex flex-col items-center pt-8 pb-16">
             <h2 class="text-xl sm:text-2xl font-bold text-[#003157] dark:text-blue-400 mb-6 text-center" data-i18n="tracking-title">Rastrear Encomenda</h2>
             
@@ -132,7 +130,6 @@
                 </button>
             </div>
 
-            <!-- Solução direta de integração de serviço terceiro via Iframe para evitar CORS -->
             <div class="w-full max-w-[500px] h-[220px] sm:h-[175px] border border-gray-50 rounded-2xl overflow-hidden bg-white relative shadow-sm mx-auto">
                 <div id="msgAguardando" class="absolute inset-0 flex items-center justify-center text-gray-500 text-center text-sm p-6 px-10" data-i18n="tracking-wait"></div>
                 <iframe id="frameRastreio" src="about:blank" scrolling="no" class="w-full h-[2000px] border-none bg-white hidden mt-[-97px] sm:mt-[-97px]"></iframe>
@@ -200,7 +197,6 @@
                     <input type="hidden" id="warrantyId">
                     
                     <div class="p-4 sm:p-5 flex-1 overflow-y-auto hide-scrollbar">
-                        <!-- Uploader de Imagem (Upload Local) -->
                         <div class="mb-3">
                             <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="label-image">Imagem do Produto</label>
                             <div class="border-2 border-dashed border-gray-300 rounded-xl p-3 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-gray-50 transition-colors relative overflow-hidden h-24" onclick="$('productImage').click()">
@@ -212,7 +208,6 @@
                             <input type="hidden" id="productImageBase64">
                         </div>
 
-                        <!-- Grid de Campos de Formulário -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                             <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="label-name">Nome *</label><input type="text" id="name" required class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-gray-200"></div>
                             <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="label-category">Categoria</label><select id="category" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white"></select></div>
@@ -237,8 +232,8 @@
                         </div>
                     </div>
 
-                    <!-- Rodapé de Ações do Form -->
                     <div class="flex justify-between items-center gap-3 px-5 py-3 sm:px-6 sm:py-4 border-t border-gray-100 bg-white flex-shrink-0">
+                        <!-- Botão Excluir com Estado Duplo (State-Based) -->
                         <button type="button" id="deleteBtn" onclick="handleDeleteClick()" class="hidden px-4 py-2 text-sm font-medium text-red-600 bg-white border border-red-200 rounded-lg hover:bg-red-50 flex items-center gap-2 transition-all duration-300">
                             <i class="ph ph-trash" id="deleteBtnIcon"></i> <span id="deleteBtnText" data-i18n="btn-delete">Excluir</span>
                         </button>
@@ -252,40 +247,58 @@
         </div>
     </div>
 
-    <!-- MODAL: IMPORTAR / EXPORTAR (BACKUP) -->
+    <!-- MODAL UNIFICADO: IMPORTAR / EXPORTAR / NUVEM -->
     <div id="importExportModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                <h2 class="text-lg font-bold" data-i18n="backup-title">Importar / Exportar Dados</h2>
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 dark:bg-gray-800">
+                <h2 class="text-lg font-bold flex items-center gap-2 text-gray-800 dark:text-gray-100">
+                    <i class="ph ph-swap text-blue-500"></i> <span data-i18n="backup-title">Sincronização e Backup</span>
+                </h2>
                 <button onclick="toggleModal('importExportModal', false)" class="text-gray-400 hover:text-gray-600"><i class="ph ph-x text-xl"></i></button>
             </div>
+            
             <div class="p-6">
-                <!-- Painel do Google Drive (Nuvem) -->
-                <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800 mb-6">
-                    <div class="flex items-start gap-3">
-                        <div class="p-2 bg-blue-100 dark:bg-blue-800 rounded-lg shrink-0">
-                            <i class="ph ph-google-logo text-blue-600 dark:text-blue-300 text-xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-blue-900 dark:text-blue-100 text-sm mb-1" data-i18n="gdrive-title">Sincronização na Nuvem</h3>
-                            <p class="text-xs text-blue-700 dark:text-blue-300 mb-3" data-i18n="gdrive-desc">Sincronize automaticamente os seus dispositivos com o Google Drive.</p>
-                            <div class="flex gap-2">
-                                <button onclick="connectGoogleDrive()" class="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors flex justify-center items-center gap-2">
-                                    <i class="ph ph-arrows-clockwise"></i> <span data-i18n="btn-gdrive-connect">Conectar Drive</span>
-                                </button>
-                                <button onclick="disconnectGoogleDrive()" class="px-3 py-2 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 text-xs font-bold rounded-lg transition-colors" title="Desconectar">
-                                    <i class="ph ph-plug-x text-base"></i>
-                                </button>
-                            </div>
-                        </div>
+                <!-- Seção 1: NUVEM (Google Drive) -->
+                <div class="mb-6">
+                    <h3 class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-3 flex items-center justify-between">
+                        <span class="flex items-center gap-2"><i class="ph ph-cloud"></i> Google Drive (Automático)</span>
+                        <button id="btn-disconnect-drive" onclick="disconnectGoogleDrive()" class="hidden text-xs text-red-500 hover:underline" data-i18n="btn-disconnect">Desconectar</button>
+                    </h3>
+                    
+                    <!-- Estado Desconectado -->
+                    <div id="gdrive-unauth-panel" class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 text-center">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-3" data-i18n="gdrive-desc">Ative para sincronizar seus dados entre celular e computador sem perder nada.</p>
+                        <button onclick="connectGoogleDrive()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-blue-700 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50 rounded-lg transition-colors">
+                            <i class="ph ph-google-logo text-lg"></i> <span data-i18n="btn-gdrive-connect">Ativar Sincronização</span>
+                        </button>
+                    </div>
+
+                    <!-- Estado Conectado (Ações Manuais para Nuvem) -->
+                    <div id="gdrive-auth-panel" class="hidden grid grid-cols-2 gap-3">
+                        <button onclick="syncFromDriveManual()" class="flex flex-col items-center justify-center gap-1.5 p-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
+                            <i class="ph ph-cloud-arrow-down text-2xl text-blue-500"></i>
+                            <span data-i18n="btn-cloud-down">Importar da Nuvem</span>
+                        </button>
+                        <button onclick="syncToDriveManual()" class="flex flex-col items-center justify-center gap-1.5 p-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
+                            <i class="ph ph-cloud-arrow-up text-2xl text-green-500"></i>
+                            <span data-i18n="btn-cloud-up">Exportar para Nuvem</span>
+                        </button>
                     </div>
                 </div>
 
-                <p class="text-sm text-gray-600 mb-4" data-i18n="backup-desc">Backup consolidado offline.</p>
-                <div class="space-y-4">
-                    <button onclick="exportData()" class="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800"><i class="ph ph-export"></i> <span data-i18n="btn-export">Exportar</span></button>
-                    <div class="relative flex justify-center text-sm my-2"><div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div><span class="px-2 bg-white text-gray-500 relative">ou</span></div>
-                    <button onclick="$('importFile').click()" class="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"><i class="ph ph-import"></i> <span data-i18n="btn-import">Importar</span></button>
+                <div class="relative flex justify-center text-sm my-5">
+                    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200 dark:border-gray-700"></div></div>
+                    <span class="px-3 bg-white dark:bg-gray-900 text-gray-400 dark:text-gray-500 relative text-xs font-bold uppercase tracking-widest">OU LOCALMENTE</span>
+                </div>
+
+                <!-- Seção 2: LOCAL (Download/Upload de Arquivo JSON) -->
+                <div class="space-y-3">
+                    <button onclick="exportData()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                        <i class="ph ph-download-simple"></i> <span data-i18n="btn-export">Baixar Ficheiro (.json)</span>
+                    </button>
+                    <button onclick="$('importFile').click()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                        <i class="ph ph-upload-simple"></i> <span data-i18n="btn-import">Carregar Ficheiro (.json)</span>
+                    </button>
                     <input type="file" id="importFile" accept=".json" class="hidden" onchange="importData(event)">
                 </div>
             </div>
@@ -315,10 +328,6 @@
     <!-- LÓGICA JAVASCRIPT OTIMIZADA                -->
     <!-- ========================================== -->
     <script>
-        /* * 1. CORE & HELPERS
-         * Simplificação massiva das chamadas ao DOM (Micro-jQuery pattern)
-         * Comentar lógicas exaustivamente atende ao paradigma imposto pelo perfil.
-         */
         const $ = id => document.getElementById(id);
         const $$ = sel => document.querySelectorAll(sel);
 
@@ -326,53 +335,51 @@
         const SETTINGS_KEY = 'garantia_plus_settings';
         const TRACKING_KEY = 'garantia_plus_tracking';
         const DEFAULT_IMAGE = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23ccc%22 stroke-width=%221%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%223%22 y=%223%22 width=%2218%22 height=%2218%22 rx=%222%22 ry=%222%22%3E%3C/rect%3E%3Ccircle cx=%228.5%22 cy=%228.5%22 r=%221.5%22%3E%3C/circle%3E%3Cpolyline points=%2221 15 16 10 5 21%22%3E%3C/polyline%3E%3C/svg%3E";
-        
-        // Array de IDs para automatizar a leitura e escrita do formulário de garantias (DRY Principle)
         const FORM_FIELDS = ['name', 'category', 'brand', 'model', 'purchaseDate', 'warrantyYears', 'store', 'price', 'receiptLink', 'notes'];
 
-        /* * 2. DICIONÁRIO I18N (CLIENT-SIDE)
-         * Solução nativa sem dependência de bibliotecas pesadas.
-         */
+        // DICIONÁRIO I18N
         const translations = {
             'pt-PT': {
                 'app-name': 'Garantia+', 'app-subtitle': 'Gestor de Garantias', 'nav-tracking': 'Rastreio', 'nav-settings': 'Definições',
-                'btn-backup': 'Importar/Exportar', 'btn-new': 'Nova Garantia', 'btn-save': 'Guardar', 'btn-cancel': 'Cancelar',
-                'btn-delete': 'Excluir', 'btn-delete-confirm': 'Confirmar?', 'btn-add': 'Adicionar', 'btn-search': 'PESQUISAR', 'btn-export': 'Exportar Dados', 'btn-import': 'Importar Dados',
+                'btn-backup': 'Sincronizar', 'btn-new': 'Nova Garantia', 'btn-save': 'Guardar', 'btn-cancel': 'Cancelar',
+                'btn-delete': 'Excluir', 'btn-delete-confirm': 'Confirmar?', 'btn-add': 'Adicionar', 'btn-search': 'PESQUISAR', 
+                'btn-export': 'Baixar Ficheiro (.json)', 'btn-import': 'Carregar Ficheiro (.json)',
+                'btn-cloud-down': 'Importar da Nuvem', 'btn-cloud-up': 'Exportar p/ Nuvem', 'btn-disconnect': 'Desconectar',
                 'search-placeholder': 'Pesquisar por produto, marca, modelo ou loja...', 'sort-newest': 'Mais recentes', 'sort-oldest': 'Mais antigas', 'sort-expiring': 'A expirar logo',
                 'tracking-title': 'Rastrear Encomenda', 'tracking-placeholder': 'Código (ex: AA123456789BR)', 'tracking-wait': 'Introduza um código para visualizar detalhes.',
                 'tracking-history': 'Histórico de Consultas', 'tracking-empty': 'Nenhum histórico guardado.', 'tracking-default-name': 'Encomenda',
                 'tracking-edit-title': 'Renomear Encomenda', 'tracking-edit-label': 'Identificação',
                 'settings-appearance': 'Aparência e Idioma', 'settings-darkmode': 'Modo Escuro', 'settings-darkmode-desc': 'Otimizado para menor fadiga ocular', 'settings-lang': 'Idioma', 'settings-categories': 'Categorias',
-                'cat-new-placeholder': 'Nova categoria...', 'backup-title': 'Importar / Exportar Dados', 'backup-desc': 'Exporte ou importe num único ficheiro consolidado.',
+                'cat-new-placeholder': 'Nova categoria...', 'backup-title': 'Sincronização e Backup', 'gdrive-desc': 'Ative para sincronizar seus dados entre celular e computador sem perder nada.',
                 'label-image': 'Imagem do Produto', 'label-image-click': 'Clique para adicionar imagem',
                 'label-name': 'Nome do Produto *', 'label-category': 'Categoria', 'label-brand': 'Marca', 'label-model': 'Modelo', 'label-date': 'Data da Compra *', 'label-years': 'Prazo (anos) *',
                 'label-store': 'Loja', 'label-price': 'Preço (R$)', 'label-link': 'Link da Nota Fiscal', 'label-notes': 'Observações',
                 'stat-total': 'Total', 'stat-active': 'Ativas', 'stat-critical': 'No Prazo', 'stat-expired': 'Expiradas',
                 'modal-title-new': 'Nova Garantia', 'modal-title-edit': 'Editar Garantia', 'msg-confirm-delete': 'Tem a certeza que deseja eliminar?', 'msg-import-error': 'Erro na integridade do ficheiro.', 'msg-import-success': 'Restaurado com sucesso!',
-                'gdrive-title': 'Sincronização na Nuvem', 'gdrive-desc': 'Sincronize automaticamente os seus dispositivos com o Google Drive.', 'btn-gdrive-connect': 'Conectar Drive', 'gdrive-offline': 'Offline', 'gdrive-loading': 'Conectando...', 'gdrive-syncing': 'Sincronizando...', 'gdrive-online': 'Nuvem Atualizada', 'gdrive-error': 'Erro na Nuvem', 'gdrive-disconnected': 'Desconectado do Google Drive.'
+                'btn-gdrive-connect': 'Ativar Sincronização', 'gdrive-offline': 'Offline', 'gdrive-loading': 'Conectando...', 'gdrive-syncing': 'Sincronizando...', 'gdrive-online': 'Nuvem Atualizada', 'gdrive-error': 'Erro na Nuvem', 'msg-sync-success': 'Nuvem atualizada e sincronizada!'
             },
             'en-US': {
                 'app-name': 'Warranty+', 'app-subtitle': 'Warranty Manager', 'nav-tracking': 'Tracking', 'nav-settings': 'Settings',
-                'btn-backup': 'Import/Export', 'btn-new': 'New', 'btn-save': 'Save', 'btn-cancel': 'Cancel',
-                'btn-delete': 'Delete', 'btn-delete-confirm': 'Confirm?', 'btn-add': 'Add', 'btn-search': 'SEARCH', 'btn-export': 'Export Data', 'btn-import': 'Import Data',
+                'btn-backup': 'Sync', 'btn-new': 'New', 'btn-save': 'Save', 'btn-cancel': 'Cancel',
+                'btn-delete': 'Delete', 'btn-delete-confirm': 'Confirm?', 'btn-add': 'Add', 'btn-search': 'SEARCH', 
+                'btn-export': 'Download File (.json)', 'btn-import': 'Upload File (.json)',
+                'btn-cloud-down': 'Import from Cloud', 'btn-cloud-up': 'Export to Cloud', 'btn-disconnect': 'Disconnect',
                 'search-placeholder': 'Search by product, brand, model...', 'sort-newest': 'Newest', 'sort-oldest': 'Oldest', 'sort-expiring': 'Expiring soon',
                 'tracking-title': 'Track Shipment', 'tracking-placeholder': 'Tracking code...', 'tracking-wait': 'Enter a tracking code to view details.',
                 'tracking-history': 'Search History', 'tracking-empty': 'No saved history.', 'tracking-default-name': 'Package',
                 'tracking-edit-title': 'Rename Package', 'tracking-edit-label': 'Identification',
                 'settings-appearance': 'Appearance & Language', 'settings-darkmode': 'Dark Mode', 'settings-darkmode-desc': 'Optimized for eye comfort', 'settings-lang': 'Language', 'settings-categories': 'Categories',
-                'cat-new-placeholder': 'New category...', 'backup-title': 'Import / Export Data', 'backup-desc': 'Export or import your data in a single file.',
+                'cat-new-placeholder': 'New category...', 'backup-title': 'Sync & Backup', 'gdrive-desc': 'Enable cloud sync to keep devices updated seamlessly.',
                 'label-image': 'Product Image', 'label-image-click': 'Click to add image',
                 'label-name': 'Product Name *', 'label-category': 'Category', 'label-brand': 'Brand', 'label-model': 'Model', 'label-date': 'Purchase Date *', 'label-years': 'Period (years) *',
                 'label-store': 'Store', 'label-price': 'Price', 'label-link': 'Receipt Link', 'label-notes': 'Notes',
                 'stat-total': 'Total', 'stat-active': 'Active', 'stat-critical': 'Critical', 'stat-expired': 'Expired',
                 'modal-title-new': 'New Warranty', 'modal-title-edit': 'Edit Warranty', 'msg-confirm-delete': 'Are you sure you want to delete this?', 'msg-import-error': 'File integrity error.', 'msg-import-success': 'Restored successfully!',
-                'gdrive-title': 'Cloud Sync', 'gdrive-desc': 'Automatically sync your devices with Google Drive.', 'btn-gdrive-connect': 'Connect Drive', 'gdrive-offline': 'Offline', 'gdrive-loading': 'Connecting...', 'gdrive-syncing': 'Syncing...', 'gdrive-online': 'Cloud Synced', 'gdrive-error': 'Cloud Error', 'gdrive-disconnected': 'Disconnected from Google Drive.'
+                'btn-gdrive-connect': 'Enable Cloud Sync', 'gdrive-offline': 'Offline', 'gdrive-loading': 'Connecting...', 'gdrive-syncing': 'Syncing...', 'gdrive-online': 'Cloud Synced', 'gdrive-error': 'Cloud Error', 'msg-sync-success': 'Cloud successfully updated!'
             }
         };
 
-        /* * 3. ESTADO GLOBAL (STATE MANAGEMENT)
-         * Inicialização direta via LocalStorage
-         */
+        // ESTADO GLOBAL
         let warranties = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
         let trackingHistory = JSON.parse(localStorage.getItem(TRACKING_KEY)) || [];
         let appSettings = JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {
@@ -380,8 +387,7 @@
             categories: ['Eletrônicos', 'Eletrodomésticos', 'Informática', 'Hardware', 'Móveis', 'Veículos', 'Outros']
         };
 
-        /* * 4. CICLO DE VIDA E INTERFACE
-         */
+        // CICLO DE VIDA E INTERFACE
         const getDict = () => translations[appSettings.language || 'pt-PT'] || translations['pt-PT'];
 
         function initializeApp() {
@@ -391,11 +397,9 @@
 
         function updateUIText() {
             const dict = getDict();
-            // Atualiza Textos e Placeholders baseados nos atributos de dados
             $$('[data-i18n]').forEach(el => { if (dict[el.dataset.i18n]) el.textContent = dict[el.dataset.i18n]; });
             $$('[data-i18n-placeholder]').forEach(el => { if (dict[el.dataset.i18nPlaceholder]) el.placeholder = dict[el.dataset.i18nPlaceholder]; });
             
-            // Re-renderização dos módulos visuais dependentes do idioma/configurações
             renderCategories();
             renderTrackingHistory();
             renderWarranties();
@@ -403,8 +407,6 @@
 
         function applySettings() {
             document.documentElement.classList.toggle('dark', appSettings.darkMode);
-            
-            // Otimização visual dos botões
             if ($('toggleCircle')) $('toggleCircle').style.transform = appSettings.darkMode ? 'translateX(24px)' : 'translateX(0)';
             if ($('darkModeToggle')) { 
                 $('darkModeToggle').classList.toggle('bg-blue-600', appSettings.darkMode); 
@@ -418,16 +420,14 @@
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(appSettings)); 
             applySettings();
             
-            // Mantém o filtro de pesquisa ativo entre as trocas de estado
             const prevFilter = $('categoryFilter')?.value || 'all';
             updateUIText(); 
             if ($('categoryFilter')) { $('categoryFilter').value = prevFilter; renderWarranties(); }
-            triggerCloudSync(); // Envia as configurações novas para o Drive
+            triggerCloudSync();
         }
 
         const toggleDarkMode = () => updateSetting('darkMode', !appSettings.darkMode);
 
-        // Roteador super simples Client-Side (SPA)
         function showView(view) {
             ['garantias', 'rastreio', 'settings'].forEach(v => {
                 if ($(`view-${v}`)) $(`view-${v}`).classList.toggle('hidden', v !== view);
@@ -442,8 +442,7 @@
             }
         }
 
-        /* * 5. GESTÃO DE CATEGORIAS
-         */
+        // GESTÃO DE CATEGORIAS
         function renderCategories() {
             const lang = appSettings.language || 'pt-PT';
             const opts = `<option value="all">${lang === 'pt-PT' ? 'Todas' : 'All'}</option>` + appSettings.categories.map(c => `<option value="${c}">${c}</option>`).join('');
@@ -454,7 +453,6 @@
                 $('categoryFilter').value = prev || 'all';
             }
             if ($('category')) $('category').innerHTML = appSettings.categories.map(c => `<option value="${c}">${c}</option>`).join('');
-            
             if ($('categoriesList')) {
                 $('categoriesList').innerHTML = appSettings.categories.map(c => `
                     <div class="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full text-sm">
@@ -473,28 +471,24 @@
 
         const removeCategory = cat => { appSettings.categories = appSettings.categories.filter(c => c !== cat); updateSetting('categories', appSettings.categories); }
 
-        /* * 6. LÓGICA DE RASTREIO (IFRAME API)
-         * Integrando serviço de terceiros diretamente via iframe para burlar limites de CORS do navegador.
-         */
+        // RASTREIO
         function carregarRastreio() {
             const codigo = $('inputCodigo')?.value.trim().toUpperCase();
             if (!codigo || codigo.length < 13) return;
 
-            // Tratamento de Histórico (LRU Padrão)
             const existingIdx = trackingHistory.findIndex(t => t.code === codigo);
             if (existingIdx === -1) {
                 const defaultName = getDict()['tracking-default-name'] || 'Encomenda';
                 trackingHistory.unshift({ code: codigo, name: `${defaultName} ${codigo.slice(-4)}` });
                 if (trackingHistory.length > 20) trackingHistory.pop();
             } else {
-                trackingHistory.unshift(trackingHistory.splice(existingIdx, 1)[0]); // Move para o topo
+                trackingHistory.unshift(trackingHistory.splice(existingIdx, 1)[0]);
             }
             
             localStorage.setItem(TRACKING_KEY, JSON.stringify(trackingHistory));
             renderTrackingHistory();
-            triggerCloudSync(); // Sincroniza histórico na nuvem
+            triggerCloudSync();
 
-            // Injeção da URL externa
             if($('msgAguardando')) $('msgAguardando').style.display = 'none';
             if ($('frameRastreio')) {
                 $('frameRastreio').style.display = 'block';
@@ -539,8 +533,6 @@
                 $('tracking-history-list').innerHTML = `<p class="text-sm text-center text-gray-500 py-6 border border-gray-100 dark:border-gray-700 border-dashed rounded-xl">${getDict()['tracking-empty']}</p>`;
                 return;
             }
-
-            // Otimização de renderização visual dos cartões do histórico
             $('tracking-history-list').innerHTML = trackingHistory.map(t => `
                 <div class="flex items-center justify-between bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm group hover:border-blue-200">
                     <div class="flex items-center gap-3 cursor-pointer flex-1 overflow-hidden" onclick="loadTracking('${t.code}')">
@@ -554,20 +546,18 @@
                 </div>`).join('');
         }
 
-        /* * 7. CRUD DE GARANTIAS (Otimizado usando Arrays de Campos)
-         */
+        // CRUD DE GARANTIAS
         function openFormModal() {
             if ($('warrantyForm')) $('warrantyForm').reset();
             $('warrantyId').value = '';
             $('modalTitle').innerText = getDict()['modal-title-new'];
             $('productImagePreview').classList.add('hidden');
             $('productImageBase64').value = '';
-            resetDeleteButton(); // Garante que o botão volte ao estado inicial seguro (exigindo os 2 cliques)
+            resetDeleteButton();
             $('deleteBtn').classList.add('hidden');
             toggleModal('formModal', true);
         }
 
-        // Enriquecedor de dados em tempo real (reduz overhead no localStorage)
         const enrichData = w => {
             const y = w.warrantyYears || (w.warrantyMonths ? w.warrantyMonths/12 : 1);
             const endDate = new Date(new Date(w.purchaseDate).getTime() + (new Date(w.purchaseDate).getTimezoneOffset() * 60000));
@@ -585,7 +575,6 @@
             const dict = getDict();
             const enriched = warranties.map(enrichData);
             
-            // 1. Estatísticas Rápidas
             const stats = enriched.reduce((acc, w) => {
                 if(['active','expiring'].includes(w.status)) acc.active++;
                 if(w.status==='expiring') acc.expiring++;
@@ -602,7 +591,6 @@
                     sBlock(dict['stat-expired'], stats.expired, 'border-l-red-500', 'text-red-500');
             }
 
-            // 2. Filtros
             const term = $('searchInput')?.value.toLowerCase().trim() || '';
             const cat = $('categoryFilter')?.value || 'all';
             const sort = $('sortOrder')?.value || 'newest';
@@ -614,12 +602,10 @@
 
             if ($('results-count')) $('results-count').innerText = `${filtered.length} ${lang === 'pt-PT' ? 'garantias encontradas' : 'warranties found'}`;
             
-            // 3. Renderização Dinâmica HTML
             if ($('warranty-grid')) {
                 $('warranty-grid').innerHTML = filtered.map(w => {
                     const price = w.price ? parseFloat(w.price).toLocaleString(lang, {style: 'currency', currency: lang==='pt-PT'?'EUR':'USD'}) : '€ 0,00';
                     const eColor = w.status === 'active' ? 'text-green-600 bg-green-50 dark:bg-green-900/20' : 'text-red-600 bg-red-50 dark:bg-red-900/20';
-                    
                     const badgeStr = {
                         active: `<span class="bg-green-600/80 backdrop-blur-sm text-white text-[8px] sm:text-[10px] font-bold px-2 py-1 rounded-full absolute top-2 left-2 z-10 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-300 rounded-full animate-pulse"></span>${lang==='pt-PT'?'Ativa':'Active'}</span>`,
                         expiring: `<span class="bg-yellow-500/90 backdrop-blur-sm text-white text-[8px] sm:text-[10px] font-bold px-2 py-1 rounded-full absolute top-2 left-2 z-10 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-yellow-200 rounded-full"></span>${lang==='pt-PT'?'A expirar':'Expiring'}</span>`,
@@ -658,7 +644,6 @@
             }
         }
 
-        /* Compressão de Imagens Client-Side via HTML Canvas */
         function previewImage(event) {
             const file = event.target.files[0]; if (!file) return;
             const reader = new FileReader();
@@ -681,12 +666,10 @@
             reader.readAsDataURL(file);
         }
 
-        // Lógica Seca (DRY) utilizando o array FORM_FIELDS
         function saveWarranty(event) {
             event.preventDefault();
             const id = $('warrantyId').value || Date.now().toString(36);
             
-            // População programática do objeto a partir dos inputs HTML
             const item = { id, productImage: $('productImageBase64').value };
             FORM_FIELDS.forEach(field => {
                 const el = $(field);
@@ -699,14 +682,13 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(warranties));
             renderWarranties();
             toggleModal('formModal', false);
-            triggerCloudSync(); // Envia os dados da nova/editada garantia para o Google Drive
+            triggerCloudSync();
         }
 
         function editWarranty(id) {
             const w = warranties.find(w => w.id === id); if (!w) return;
             $('warrantyId').value = w.id;
             
-            // Preenchimento programático
             FORM_FIELDS.forEach(k => { if($(k)) $(k).value = w[k] || ''; });
             
             if ($('productImageBase64')) $('productImageBase64').value = w.productImage || '';
@@ -715,52 +697,33 @@
                 else { $('productImagePreview').classList.add('hidden'); }
             }
             $('modalTitle').innerText = getDict()['modal-title-edit'];
-            resetDeleteButton(); // Reseta o estado do botão de excluir ao abrir um novo item
+            resetDeleteButton();
             $('deleteBtn').classList.remove('hidden');
             toggleModal('formModal', true);
         }
 
-        /* * Lógica de Exclusão Segura (State-based / 2 Cliques)
-         * Evita acidentes forçando o usuário a confirmar a intenção num segundo clique.
-         */
-        let deleteTimeout; // Variável global para controlar o temporizador
+        let deleteTimeout;
         function handleDeleteClick() {
             const btn = $('deleteBtn');
-            
             if (btn.dataset.step === '1') {
-                // Segundo clique: O usuário confirmou. Cancela o timer e deleta os dados.
                 clearTimeout(deleteTimeout);
                 deleteCurrentWarranty();
             } else {
-                // Primeiro clique: Muda a interface do botão para o estado de "Aviso".
                 btn.dataset.step = '1';
                 $('deleteBtnIcon').classList.replace('ph-trash', 'ph-warning');
                 $('deleteBtnText').innerText = getDict()['btn-delete-confirm'];
-                
-                // Inverte as cores para chamar atenção imediata do usuário
                 btn.classList.remove('text-red-600', 'bg-white', 'hover:bg-red-50');
                 btn.classList.add('text-white', 'bg-red-600', 'hover:bg-red-700');
-                
-                // Auto-cancelamento inteligente: se ele não confirmar em 3s, o botão se desarma
-                deleteTimeout = setTimeout(() => {
-                    if (!$('formModal').classList.contains('hidden')) resetDeleteButton();
-                }, 3000);
+                deleteTimeout = setTimeout(() => { if (!$('formModal').classList.contains('hidden')) resetDeleteButton(); }, 3000);
             }
         }
 
-        /* * Desarma o botão de volta para o estado inofensivo inicial */
         function resetDeleteButton() {
             const btn = $('deleteBtn');
             if (!btn) return;
-            
-            btn.dataset.step = '0'; // Reseta o rastreador de cliques
-            const icon = $('deleteBtnIcon');
-            if(icon) icon.classList.replace('ph-warning', 'ph-trash');
-            
-            const span = $('deleteBtnText');
-            if(span) span.innerText = getDict()['btn-delete'];
-            
-            // Reverte para o estilo base
+            btn.dataset.step = '0';
+            const icon = $('deleteBtnIcon'); if(icon) icon.classList.replace('ph-warning', 'ph-trash');
+            const span = $('deleteBtnText'); if(span) span.innerText = getDict()['btn-delete'];
             btn.classList.remove('text-white', 'bg-red-600', 'hover:bg-red-700');
             btn.classList.add('text-red-600', 'bg-white', 'hover:bg-red-50');
         }
@@ -772,11 +735,12 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(warranties));
             renderWarranties();
             toggleModal('formModal', false);
-            triggerCloudSync(); // Dispara atualização e apaga garantia na nuvem
+            triggerCloudSync();
         }
 
-        /* * 8. SINCRONIZAÇÃO DE DADOS OFFLINE (Blob API)
-         */
+        // ==========================================
+        // LOCAL BACKUP API
+        // ==========================================
         function exportData() {
             const data = { version: "2.1", warranties, settings: appSettings, tracking: trackingHistory };
             const a = document.createElement('a');
@@ -802,29 +766,28 @@
                     initializeApp();
                     toggleModal('importExportModal', false);
                     alert(getDict()['msg-import-success']);
-                    triggerCloudSync(); // Alinha a nuvem aos dados recém importados manualmente
+                    triggerCloudSync(); // Sobrescreve a nuvem com o backup recém injetado
                 } catch { alert(getDict()['msg-import-error']); }
             };
             reader.readAsText(file); event.target.value = '';
         }
 
-        /* * ==========================================
-         * 9. LÓGICA DO GOOGLE DRIVE (BAAS CLIENT-SIDE)
-         * O JavaScript puro comunica com a API REST usando as chaves providenciadas.
-         * ========================================== */
+        // ==========================================
+        // GOOGLE DRIVE SYNC (BAAS CLIENT-SIDE)
+        // ==========================================
         const GDrive = {
             CLIENT_ID: '1005190363190-f5rfr5d2eqaruud5b3qolv66dnmvvg3m.apps.googleusercontent.com',
             token: null,
             fileId: localStorage.getItem('gdrive_file_id') || null,
             isConnected: localStorage.getItem('gdrive_connected') === 'true',
             client: null,
-            syncTimeout: null
+            syncTimeout: null,
+            lastSyncStamp: 0
         };
 
         function initGoogleDrive() {
-            if (typeof google === 'undefined') return; // Bypass seguro caso o GSI falhe ao carregar offline
+            if (typeof google === 'undefined') return; 
             
-            // Inicialização da instância OAuth2 do lado do cliente
             GDrive.client = google.accounts.oauth2.initTokenClient({
                 client_id: GDrive.CLIENT_ID,
                 scope: 'https://www.googleapis.com/auth/drive.file',
@@ -833,32 +796,42 @@
                         GDrive.token = response.access_token;
                         GDrive.isConnected = true;
                         localStorage.setItem('gdrive_connected', 'true');
+                        renderDriveUI();
                         updateCloudUI('syncing');
-                        await syncWithDriveOnConnect(); // Puxa dados imediatamente na autenticação
+                        await downloadFromDrive();
                     }
                 }
             });
 
-            // Lógica requisitada: "Ao dar F5 deve importar automaticamente"
+            // Tenta logar de forma silenciosa e manter a sessão contínua sem pedir cliques
             if (GDrive.isConnected) {
+                renderDriveUI();
                 updateCloudUI('loading');
                 try {
-                     // Tenta capturar o token em silêncio (Background Iframe) se houver sessão Google ativa.
-                     // Se tiver permissão ativa no browser, ele cai no callback acima e puxa os dados!
                      GDrive.client.requestAccessToken({ prompt: 'none' });
                 } catch(e) {
                      updateCloudUI('offline');
                 }
             } else {
+                renderDriveUI();
                 updateCloudUI('offline');
             }
         }
 
-        function connectGoogleDrive() {
-            if (GDrive.client) {
-                // Solicitação manual de permissão através da Interface do Usuário (Pop-up Google)
-                GDrive.client.requestAccessToken({ prompt: 'consent' });
+        function renderDriveUI() {
+            if (GDrive.isConnected) {
+                $('gdrive-unauth-panel')?.classList.add('hidden');
+                $('gdrive-auth-panel')?.classList.remove('hidden');
+                $('btn-disconnect-drive')?.classList.remove('hidden');
+            } else {
+                $('gdrive-unauth-panel')?.classList.remove('hidden');
+                $('gdrive-auth-panel')?.classList.add('hidden');
+                $('btn-disconnect-drive')?.classList.add('hidden');
             }
+        }
+
+        function connectGoogleDrive() {
+            if (GDrive.client) GDrive.client.requestAccessToken({ prompt: 'consent' });
         }
 
         function disconnectGoogleDrive() {
@@ -867,14 +840,26 @@
              GDrive.fileId = null;
              localStorage.setItem('gdrive_connected', 'false');
              localStorage.removeItem('gdrive_file_id');
+             renderDriveUI();
              updateCloudUI('offline');
-             alert(getDict()['gdrive-disconnected']);
         }
 
-        // Motor central de Sincronização e Inteligência (Cria arquivo ou Puxa do Gdrive)
-        async function syncWithDriveOnConnect() {
+        // Ações Manuais (Botões do Modal)
+        async function syncFromDriveManual() {
+            if (!GDrive.token) { connectGoogleDrive(); return; }
+            await downloadFromDrive();
+            toggleModal('importExportModal', false);
+        }
+
+        async function syncToDriveManual() {
+            if (!GDrive.token) { connectGoogleDrive(); return; }
+            await uploadToDrive();
+            toggleModal('importExportModal', false);
+        }
+
+        // Motor de Download (Puxa os dados para o dispositivo atual)
+        async function downloadFromDrive() {
             try {
-                // Etapa 1: Obter a identificação exata do arquivo na nuvem caso não saibamos (Celular Novo logando)
                 if (!GDrive.fileId) {
                     const resFind = await fetch("https://www.googleapis.com/drive/v3/files?q=name='garantia_plus_sync.json' and trashed=false&fields=files(id)", {
                         headers: { 'Authorization': 'Bearer ' + GDrive.token }
@@ -886,90 +871,106 @@
                     }
                 }
 
-                // Etapa 2: Recuperação de Dados. "Puxar as coisas da nuvem e injetar na memória"
                 if (GDrive.fileId) {
                     const resDownload = await fetch(`https://www.googleapis.com/drive/v3/files/${GDrive.fileId}?alt=media`, {
                         headers: { 'Authorization': 'Bearer ' + GDrive.token }
                     });
                     const data = await resDownload.json();
                     
-                    if (data.warranties) warranties = data.warranties;
-                    if (data.settings) appSettings = data.settings;
-                    if (data.tracking) trackingHistory = data.tracking;
+                    warranties = data.warranties || [];
+                    appSettings = data.settings || appSettings;
+                    trackingHistory = data.tracking || [];
 
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(warranties));
                     localStorage.setItem(SETTINGS_KEY, JSON.stringify(appSettings));
                     localStorage.setItem(TRACKING_KEY, JSON.stringify(trackingHistory));
 
-                    initializeApp(); // Reconstrói visualmente todos os Cards
-                    toggleModal('importExportModal', false);
+                    GDrive.lastSyncStamp = Date.now();
+                    initializeApp();
                     updateCloudUI('online');
                 } else {
-                    // Etapa 3: Nada existe no Google Drive deste e-mail. Vamos empurrar o state atual pra ele.
-                    await uploadToDrive(true);
+                    // Arquivo virgem, faz push dos dados locais pro GDrive
+                    await uploadToDrive();
                 }
             } catch (error) {
-                console.error("Erro no GDrive:", error);
+                console.error(error);
                 updateCloudUI('error');
             }
         }
 
-        // Trabalhador pesado do GDrive REST API (Criação de Multipart Form via JS sem Backend)
-        async function uploadToDrive(isCreation = false) {
+        // Motor de Upload em 2 Etapas (REST Nativo, evita falhas de multipart)
+        async function uploadToDrive() {
             if (!GDrive.token) return;
             updateCloudUI('syncing');
 
-            const data = { version: "2.1", warranties, settings: appSettings, tracking: trackingHistory };
-            const fileContent = JSON.stringify(data);
-            const metadata = { name: 'garantia_plus_sync.json', mimeType: 'application/json' };
-
-            const form = new FormData();
-            form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-            form.append('file', new Blob([fileContent], { type: 'application/json' }));
-
-            let url = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
-            let method = 'POST'; // Cria o arquivo virgem no drive
-
-            if (!isCreation && GDrive.fileId) {
-                url = `https://www.googleapis.com/upload/drive/v3/files/${GDrive.fileId}?uploadType=multipart`;
-                method = 'PATCH'; // Atualiza os blocos e substitui o arquivo velho
-            }
+            const fileContent = JSON.stringify({ version: "2.1", warranties, settings: appSettings, tracking: trackingHistory });
 
             try {
-                const res = await fetch(url, {
-                    method: method,
-                    headers: { 'Authorization': 'Bearer ' + GDrive.token },
-                    body: form
-                });
-                const result = await res.json();
-                if (result.id) {
-                    GDrive.fileId = result.id;
-                    localStorage.setItem('gdrive_file_id', result.id);
+                // Etapa 1: Obter ID ou Criar Metadados
+                let id = GDrive.fileId;
+                if (!id) {
+                    const resFind = await fetch("https://www.googleapis.com/drive/v3/files?q=name='garantia_plus_sync.json' and trashed=false&fields=files(id)", {
+                        headers: { 'Authorization': 'Bearer ' + GDrive.token }
+                    });
+                    const jsonFind = await resFind.json();
+                    if (jsonFind.files && jsonFind.files.length > 0) {
+                        id = jsonFind.files[0].id;
+                    } else {
+                        const metaRes = await fetch('https://www.googleapis.com/drive/v3/files', {
+                            method: 'POST',
+                            headers: { 'Authorization': 'Bearer ' + GDrive.token, 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name: 'garantia_plus_sync.json', mimeType: 'application/json' })
+                        });
+                        const meta = await metaRes.json();
+                        id = meta.id;
+                    }
+                    GDrive.fileId = id;
+                    localStorage.setItem('gdrive_file_id', id);
                 }
+
+                // Etapa 2: Fazer Upload (Substituição) do arquivo
+                await fetch(`https://www.googleapis.com/upload/drive/v3/files/${id}?uploadType=media`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': 'Bearer ' + GDrive.token, 'Content-Type': 'application/json' },
+                    body: fileContent
+                });
+                
+                GDrive.lastSyncStamp = Date.now();
                 updateCloudUI('online');
             } catch(e) {
+                console.error(e);
                 updateCloudUI('error');
             }
         }
 
-        // Delay Inteligente (Debounce)
-        // Evita chamadas abusivas na API enquanto o usuário salva vários itens rápidos. Evita ban.
+        // Sincronização Inteligente por Debounce (Escreve na nuvem X segs após mudanças locais)
         function triggerCloudSync() {
             if (!GDrive.isConnected || !GDrive.token) return;
             clearTimeout(GDrive.syncTimeout);
             updateCloudUI('syncing');
             GDrive.syncTimeout = setTimeout(() => {
                 uploadToDrive();
-            }, 3000); // 3 segundos de respiro para o envio consolidado
+            }, 3000); 
         }
 
+        // AUTO-SYNC DE DISPOSITIVOS: Detecta quando o navegador/aba ganha foco (Ex: Abrir o app no celular)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && GDrive.isConnected && GDrive.token) {
+                // Evita loops infinitos se a aba perder foco rápido demais (limite de 10seg)
+                if (Date.now() - GDrive.lastSyncStamp > 10000) {
+                    updateCloudUI('syncing');
+                    downloadFromDrive();
+                }
+            }
+        });
+
+        // Controle da Interface de Badge de Conexão no Header
         function updateCloudUI(status) {
             const icon = $('gdrive-status-icon');
             const text = $('gdrive-status-text');
             if(!icon || !text) return;
             const dict = getDict();
 
-            // Zera as classes dinâmicas
             icon.classList.remove('ph-cloud-slash', 'ph-arrows-clockwise', 'animate-spin', 'ph-cloud-check', 'text-gray-400', 'text-blue-500', 'text-green-500', 'text-red-500');
 
             if (status === 'offline') {
@@ -990,10 +991,11 @@
             }
         }
 
-        /* Boot Seguro */
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeApp);
         else initializeApp();
 
     </script>
 </body>
 </html>
+
+
