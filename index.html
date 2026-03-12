@@ -794,6 +794,11 @@
                         updateCloudUI('syncing');
                         await downloadFromDrive();
                     }
+                },
+                // NOVO: Tratamento de erros oficial da Google para descobrir o motivo da falha
+                error_callback: (error) => {
+                    alert('Erro retornado pela Google: ' + (error.type || JSON.stringify(error)) + '\n\nCertifique-se de que o URL exato deste site está nas "Origens JavaScript autorizadas" no Google Cloud Console.');
+                    updateCloudUI('offline');
                 }
             });
 
@@ -825,7 +830,28 @@
         }
 
         function connectGoogleDrive() {
-            if (GDrive.client) GDrive.client.requestAccessToken({ prompt: 'consent' });
+            // Verificação 1: Bloqueadores de anúncios ou falha de rede a bloquear a API
+            if (typeof google === 'undefined') {
+                alert('ERRO: O script do Google não carregou. Verifique se o seu navegador está bloqueando scripts de terceiros (como Brave Shields, Modo Anônimo ou AdBlock).');
+                return;
+            }
+            
+            // Verificação 2: Forçar inicialização caso tenha falhado durante o boot da página
+            if (!GDrive.client) {
+                initGoogleDrive(); 
+            }
+            
+            // Disparo oficial do Pop-up da Google
+            if (GDrive.client) {
+                try {
+                    // Removido o prompt de consentimento obrigatório para evitar conflitos de pop-up
+                    GDrive.client.requestAccessToken();
+                } catch (error) {
+                    alert('Erro ao tentar abrir a janela da Google: ' + error.message);
+                }
+            } else {
+                alert('Falha interna: Não foi possível inicializar o cliente Google OAuth2.');
+            }
         }
 
         function disconnectGoogleDrive() {
