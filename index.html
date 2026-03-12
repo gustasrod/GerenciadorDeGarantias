@@ -798,9 +798,19 @@
                         await downloadFromDrive();
                     }
                 },
-                // NOVO: Tratamento de erros oficial da Google para descobrir o motivo da falha
+                // NOVO: Tratamento de erros inteligente
                 error_callback: (error) => {
-                    alert('Erro retornado pela Google: ' + (error.type || JSON.stringify(error)) + '\n\nCertifique-se de que o URL exato deste site está nas "Origens JavaScript autorizadas" no Google Cloud Console.');
+                    // Evita exibir alertas no F5 caso a sincronização silenciosa falhe
+                    // ou se o utilizador fechar a janela de login propositadamente.
+                    if (error.type !== 'popup_closed' && error.type !== 'interaction_required') {
+                        alert('Erro na ligação com a Google: ' + (error.type || JSON.stringify(error)) + '\n\nCertifique-se de que o URL deste site está nas "Origens JavaScript autorizadas".');
+                    }
+                    
+                    // Reverte o estado interno e a interface do utilizador para Desconectado
+                    GDrive.isConnected = false;
+                    GDrive.token = null;
+                    localStorage.setItem('gdrive_connected', 'false');
+                    renderDriveUI();
                     updateCloudUI('offline');
                 }
             });
@@ -812,6 +822,10 @@
                 try {
                      GDrive.client.requestAccessToken({ prompt: 'none' });
                 } catch(e) {
+                     // Fallback imediato caso a chamada falhe a nível de execução
+                     GDrive.isConnected = false;
+                     localStorage.setItem('gdrive_connected', 'false');
+                     renderDriveUI();
                      updateCloudUI('offline');
                 }
             } else {
