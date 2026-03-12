@@ -73,12 +73,6 @@
             
             <!-- Ações de Backup e Nova Garantia -->
             <div class="flex items-center gap-2 sm:gap-3" id="header-actions">
-                <!-- Indicador visual de Sincronização em tempo real -->
-                <button onclick="toggleModal('importExportModal', true)" class="flex items-center gap-1.5 px-3 py-2 text-[10px] sm:text-xs font-medium bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Status da Nuvem">
-                    <i id="gdrive-status-icon" class="ph ph-cloud-slash text-gray-400 text-sm sm:text-base"></i>
-                    <span id="gdrive-status-text" class="hidden sm:inline text-gray-600 dark:text-gray-300">Offline</span>
-                </button>
-                
                 <button onclick="toggleModal('importExportModal', true)" class="flex items-center gap-2 px-3 sm:px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors dark:bg-gray-800 dark:border-gray-600">
                     <i class="ph ph-swap"></i>
                     <span class="hidden md:inline" data-i18n="btn-backup">Sincronizar Dados</span>
@@ -997,5 +991,3 @@
     </script>
 </body>
 </html>
-
-
