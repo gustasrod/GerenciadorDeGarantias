@@ -222,7 +222,7 @@
                             <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="label-price">Preço</label><input type="number" id="price" step="0.01" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"></div>
                         </div>
                         <div class="mb-3">
-                            <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="label-link">Link da Fatura</label><input type="url" id="receiptLink" placeholder="https://..." class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm">
+                            <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="label-link">Link da Nota Fiscal</label><input type="url" id="receiptLink" placeholder="https://..." class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm">
                         </div>
                         <div class="mb-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="label-notes">Observações</label><textarea id="notes" rows="2" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm resize-none"></textarea>
@@ -231,7 +231,9 @@
 
                     <!-- Rodapé de Ações do Form -->
                     <div class="flex justify-between items-center gap-3 px-5 py-3 sm:px-6 sm:py-4 border-t border-gray-100 bg-white flex-shrink-0">
-                        <button type="button" id="deleteBtn" onclick="deleteCurrentWarranty()" class="hidden px-4 py-2 text-sm font-medium text-red-600 bg-white border border-red-200 rounded-lg hover:bg-red-50 flex items-center gap-2"><i class="ph ph-trash"></i> <span data-i18n="btn-delete">Eliminar</span></button>
+                        <button type="button" id="deleteBtn" onclick="handleDeleteClick()" class="hidden px-4 py-2 text-sm font-medium text-red-600 bg-white border border-red-200 rounded-lg hover:bg-red-50 flex items-center gap-2 transition-all duration-300">
+                            <i class="ph ph-trash" id="deleteBtnIcon"></i> <span id="deleteBtnText" data-i18n="btn-delete">Excluir</span>
+                        </button>
                         <div class="flex gap-3 ml-auto">
                             <button type="button" onclick="toggleModal('formModal', false)" class="px-5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50" data-i18n="btn-cancel">Cancelar</button>
                             <button type="submit" class="px-5 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800" data-i18n="btn-save">Guardar</button>
@@ -306,7 +308,7 @@
             'pt-PT': {
                 'app-name': 'Garantia+', 'app-subtitle': 'Gestor de Garantias', 'nav-tracking': 'Rastreio', 'nav-settings': 'Definições',
                 'btn-backup': 'Importar/Exportar', 'btn-new': 'Nova Garantia', 'btn-save': 'Guardar', 'btn-cancel': 'Cancelar',
-                'btn-delete': 'Eliminar', 'btn-add': 'Adicionar', 'btn-search': 'PESQUISAR', 'btn-export': 'Exportar Dados', 'btn-import': 'Importar Dados',
+                'btn-delete': 'Excluir', 'btn-delete-confirm': 'Confirmar?', 'btn-add': 'Adicionar', 'btn-search': 'PESQUISAR', 'btn-export': 'Exportar Dados', 'btn-import': 'Importar Dados',
                 'search-placeholder': 'Pesquisar por produto, marca, modelo ou loja...', 'sort-newest': 'Mais recentes', 'sort-oldest': 'Mais antigas', 'sort-expiring': 'A expirar logo',
                 'tracking-title': 'Rastrear Encomenda', 'tracking-placeholder': 'Código (ex: AA123456789BR)', 'tracking-wait': 'Introduza um código para visualizar detalhes.',
                 'tracking-history': 'Histórico de Consultas', 'tracking-empty': 'Nenhum histórico guardado.', 'tracking-default-name': 'Encomenda',
@@ -315,14 +317,14 @@
                 'cat-new-placeholder': 'Nova categoria...', 'backup-title': 'Importar / Exportar Dados', 'backup-desc': 'Exporte ou importe num único ficheiro consolidado.',
                 'label-image': 'Imagem do Produto', 'label-image-click': 'Clique para adicionar imagem',
                 'label-name': 'Nome do Produto *', 'label-category': 'Categoria', 'label-brand': 'Marca', 'label-model': 'Modelo', 'label-date': 'Data da Compra *', 'label-years': 'Prazo (anos) *',
-                'label-store': 'Loja', 'label-price': 'Preço (R$)', 'label-link': 'Link da Fatura', 'label-notes': 'Observações',
+                'label-store': 'Loja', 'label-price': 'Preço (R$)', 'label-link': 'Link da Nota Fiscal', 'label-notes': 'Observações',
                 'stat-total': 'Total', 'stat-active': 'Ativas', 'stat-critical': 'No Prazo', 'stat-expired': 'Expiradas',
                 'modal-title-new': 'Nova Garantia', 'modal-title-edit': 'Editar Garantia', 'msg-confirm-delete': 'Tem a certeza que deseja eliminar?', 'msg-import-error': 'Erro na integridade do ficheiro.', 'msg-import-success': 'Restaurado com sucesso!'
             },
             'en-US': {
                 'app-name': 'Warranty+', 'app-subtitle': 'Warranty Manager', 'nav-tracking': 'Tracking', 'nav-settings': 'Settings',
                 'btn-backup': 'Import/Export', 'btn-new': 'New', 'btn-save': 'Save', 'btn-cancel': 'Cancel',
-                'btn-delete': 'Delete', 'btn-add': 'Add', 'btn-search': 'SEARCH', 'btn-export': 'Export Data', 'btn-import': 'Import Data',
+                'btn-delete': 'Delete', 'btn-delete-confirm': 'Confirm?', 'btn-add': 'Add', 'btn-search': 'SEARCH', 'btn-export': 'Export Data', 'btn-import': 'Import Data',
                 'search-placeholder': 'Search by product, brand, model...', 'sort-newest': 'Newest', 'sort-oldest': 'Oldest', 'sort-expiring': 'Expiring soon',
                 'tracking-title': 'Track Shipment', 'tracking-placeholder': 'Tracking code...', 'tracking-wait': 'Enter a tracking code to view details.',
                 'tracking-history': 'Search History', 'tracking-empty': 'No saved history.', 'tracking-default-name': 'Package',
@@ -525,6 +527,7 @@
             $('modalTitle').innerText = getDict()['modal-title-new'];
             $('productImagePreview').classList.add('hidden');
             $('productImageBase64').value = '';
+            resetDeleteButton(); // Garante que o botão volte ao estado inicial seguro (exigindo os 2 cliques)
             $('deleteBtn').classList.add('hidden');
             toggleModal('formModal', true);
         }
@@ -606,7 +609,7 @@
                                 </div>
                                 
                                 <div class="flex items-center justify-between mb-3 ${w.receiptLink ? '' : 'justify-end'}">
-                                    ${w.receiptLink ? `<a href="${w.receiptLink}" target="_blank" class="flex items-center gap-1 text-[10px] sm:text-xs text-blue-600 hover:underline"><i class="ph ph-link text-xs"></i> <span>${lang==='pt-PT'?'Fatura':'Receipt'}</span></a>` : ''}
+                                    ${w.receiptLink ? `<a href="${w.receiptLink}" target="_blank" class="flex items-center gap-1 text-[10px] sm:text-xs text-blue-600 hover:underline"><i class="ph ph-link text-xs"></i> <span>${lang==='pt-PT'?'Nota Fiscal':'Receipt'}</span></a>` : ''}
                                     <div class="flex gap-1 text-[10px] sm:text-xs font-medium px-2 py-1 rounded ${eColor}"><span>${lang==='pt-PT'?'Fim:':'End:'}</span><span>${w.endDate.toLocaleDateString(lang)}</span></div>
                                 </div>
                                 
@@ -676,13 +679,59 @@
                 else { $('productImagePreview').classList.add('hidden'); }
             }
             $('modalTitle').innerText = getDict()['modal-title-edit'];
+            resetDeleteButton(); // Reseta o estado do botão de excluir ao abrir um novo item
             $('deleteBtn').classList.remove('hidden');
             toggleModal('formModal', true);
         }
 
+        /* * Lógica de Exclusão Segura (State-based / 2 Cliques)
+         * Evita acidentes forçando o usuário a confirmar a intenção num segundo clique.
+         */
+        let deleteTimeout; // Variável global para controlar o temporizador
+        function handleDeleteClick() {
+            const btn = $('deleteBtn');
+            
+            if (btn.dataset.step === '1') {
+                // Segundo clique: O usuário confirmou. Cancela o timer e deleta os dados.
+                clearTimeout(deleteTimeout);
+                deleteCurrentWarranty();
+            } else {
+                // Primeiro clique: Muda a interface do botão para o estado de "Aviso".
+                btn.dataset.step = '1';
+                $('deleteBtnIcon').classList.replace('ph-trash', 'ph-warning');
+                $('deleteBtnText').innerText = getDict()['btn-delete-confirm'];
+                
+                // Inverte as cores para chamar atenção imediata do usuário
+                btn.classList.remove('text-red-600', 'bg-white', 'hover:bg-red-50');
+                btn.classList.add('text-white', 'bg-red-600', 'hover:bg-red-700');
+                
+                // Auto-cancelamento inteligente: se ele não confirmar em 3s, o botão se desarma
+                deleteTimeout = setTimeout(() => {
+                    if (!$('formModal').classList.contains('hidden')) resetDeleteButton();
+                }, 3000);
+            }
+        }
+
+        /* * Desarma o botão de volta para o estado inofensivo inicial */
+        function resetDeleteButton() {
+            const btn = $('deleteBtn');
+            if (!btn) return;
+            
+            btn.dataset.step = '0'; // Reseta o rastreador de cliques
+            const icon = $('deleteBtnIcon');
+            if(icon) icon.classList.replace('ph-warning', 'ph-trash');
+            
+            const span = $('deleteBtnText');
+            if(span) span.innerText = getDict()['btn-delete'];
+            
+            // Reverte para o estilo base
+            btn.classList.remove('text-white', 'bg-red-600', 'hover:bg-red-700');
+            btn.classList.add('text-red-600', 'bg-white', 'hover:bg-red-50');
+        }
+
         function deleteCurrentWarranty() {
             const id = $('warrantyId').value;
-            if (!id || !confirm(getDict()['msg-confirm-delete'])) return;
+            if (!id) return;
             warranties = warranties.filter(w => w.id !== id);
             localStorage.setItem(STORAGE_KEY, JSON.stringify(warranties));
             renderWarranties();
